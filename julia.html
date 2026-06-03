@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Júlia ❤️</title>
+    
+    <!-- Importando Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Importando Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background-color: #fdf2f8; /* pink-50 */
+        }
+
+        .font-handwriting {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Classes para gerenciar as telas da aplicação */
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            min-height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top: 0;
+            left: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+            z-index: 10;
+        }
+
+        /* Animações Flutuantes e Fade */
+        .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
+        .fade-out { animation: fadeOut 0.5s ease-in-out forwards; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        /* Animação do Robozinho */
+        @keyframes floatBot {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .animate-float-bot { animation: floatBot 3s ease-in-out infinite; }
+
+        /* Animação de Erro (Shake) para o Quiz */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
+
+        /* Corações do Fundo */
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 182, 193, 0.4);
+            animation: floatUp linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
+        /* Novo Mural Espalhado (Tela Toda) */
+        .photo-wall {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .polaroid-scattered {
+            position: absolute;
+            background: white;
+            padding: 8px 8px 24px 8px;
+            box-shadow: 2px 8px 20px rgba(0,0,0,0.15);
+            border-radius: 2px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), z-index 0s;
+            transform-origin: center;
+            /* Tamanhos responsivos */
+            width: 25vw;
+            max-width: 150px;
+            min-width: 90px;
+        }
+        
+        @media (min-width: 768px) {
+            .polaroid-scattered { padding: 10px 10px 30px 10px; width: 14vw; max-width: 180px;}
+        }
+
+        .polaroid-scattered img {
+            width: 100%;
+            height: auto;
+            border-radius: 2px;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+
+        /* Interação ao passar o mouse nas fotos do fundo */
+        .polaroid-scattered:hover { 
+            transform: scale(1.2) rotate(0deg) !important; 
+            z-index: 50 !important; 
+            box-shadow: 4px 15px 35px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        /* Estilo de Carta de Papel */
+        .letter-style {
+            background-color: #fffafb;
+            background-image: 
+                linear-gradient(rgba(244, 114, 182, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(244, 114, 182, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            box-shadow: 2px 4px 20px rgba(0,0,0,0.15), inset 0 0 20px rgba(0,0,0,0.03);
+            border: 1px solid #fce7f3;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hearts-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+    <!-- ==========================================
+         FASE 1: TELA INICIAL (O ROBOZINHO)
+         ========================================== -->
+    <main id="screen-intro" class="screen active text-center">
+        
+        <!-- SVG do Robozinho Animado -->
+        <div class="animate-float-bot mb-6">
+            <svg viewBox="0 0 100 100" class="w-40 h-40 drop-shadow-xl mx-auto">
+                <!-- Antena -->
+                <line x1="50" y1="20" x2="50" y2="5" stroke="#94a3b8" stroke-width="4"/>
+                <circle cx="50" cy="5" r="4" fill="#fb7185" class="animate-pulse"/>
+                <!-- Cabeça -->
+                <rect x="25" y="20" width="50" height="40" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+                <!-- Bochechas de robô feliz -->
+                <circle cx="32" cy="45" r="4" fill="#ffe4e6"/>
+                <circle cx="68" cy="45" r="4" fill="#ffe4e6"/>
+                <!-- Olhos -->
+                <circle cx="38" cy="35" r="4" fill="#475569"/>
+                <circle cx="62" cy="35" r="4" fill="#475569"/>
+                <!-- Boca -->
+                <path d="M 40 48 Q 50 55 60 48" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+                <!-- Corpo -->
+                <rect x="35" y="60" width="30" height="35" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+                <!-- Coração no peito -->
+                <path d="M50 82 C50 82 45 77 45 74 C45 71.5 47 70 48.5 70 C50 70 50 72 50 72 C50 72 50 70 51.5 70 C53 70 55 71.5 55 74 C55 77 50 82 50 82 Z" fill="#fb7185" class="animate-pulse"/>
+                <!-- Braços -->
+                <line x1="35" y1="70" x2="20" y2="85" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+                <line x1="65" y1="70" x2="80" y2="85" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <h1 class="font-handwriting text-5xl md:text-6xl text-rose-500 mb-4 drop-shadow-sm">Olá, Júlia!</h1>
+        
+        <div class="bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-lg border border-white/50 max-w-md mx-auto mb-8">
+            <p class="text-gray-700 text-lg md:text-xl leading-relaxed">
+                Eu sou um robozinho, programado pelo seu namorado (o Nathan). 
+                Ele me pediu pra te entregar algo muito especial e falar algumas coisinhas pra você.
+            </p>
+        </div>
+
+        <button onclick="goToScreen('screen-quiz')" class="bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-1">
+            Clique aqui quando estiver pronta ✨
+        </button>
+    </main>
+
+    <!-- ==========================================
+         FASE 2: O QUIZ
+         ========================================== -->
+    <main id="screen-quiz" class="screen">
+        <div class="bg-white/90 backdrop-blur-md p-8 md:p-12 rounded-3xl shadow-2xl border border-white/50 max-w-lg w-full text-center relative overflow-hidden">
+            
+            <h2 class="font-handwriting text-4xl text-rose-500 mb-6">Fase 2: Um teste rápido!</h2>
+            <p class="text-gray-700 text-lg mb-8 font-medium">
+                O que o Nathan mais gosta em você?
+            </p>
+
+            <!-- Opções do Quiz -->
+            <div class="flex flex-col gap-4" id="quiz-options">
+                <button onclick="handleWrongAnswer(this)" class="quiz-btn w-full bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-200 py-3 px-6 rounded-2xl transition-all duration-200 shadow-sm">
+                    A) O meu sorriso lindo
+                </button>
+                <button onclick="handleWrongAnswer(this)" class="quiz-btn w-full bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-200 py-3 px-6 rounded-2xl transition-all duration-200 shadow-sm">
+                    B) O meu abraço aconchegante
+                </button>
+                <button onclick="handleWrongAnswer(this)" class="quiz-btn w-full bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-200 py-3 px-6 rounded-2xl transition-all duration-200 shadow-sm">
+                    C) A minha inteligência
+                </button>
+                <button onclick="handleWrongAnswer(this)" class="quiz-btn w-full bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-200 py-3 px-6 rounded-2xl transition-all duration-200 shadow-sm">
+                    D) O meu jeitinho único
+                </button>
+            </div>
+
+            <!-- Mensagem de Erro (Fofa) -->
+            <div id="quiz-feedback" class="hidden mt-6 bg-rose-100 text-rose-700 p-4 rounded-xl text-sm font-medium border border-rose-200 animate-fade-in">
+                🤖 <strong>BEEP BOOP! ERRADO!</strong><br>
+                Na verdade, ele não conseguiu escolher uma coisa só, porque ele é apaixonado por <strong>tudo</strong> em você!<br><br>
+                <span class="text-xs text-rose-500">Preparando surpresa... aguarde...</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================
+         FASE 3: POTE DE MOTIVOS
+         ========================================== -->
+    <main id="screen-jar" class="screen">
+        <div class="w-full max-w-md flex flex-col items-center">
+            
+            <h2 class="font-handwriting text-5xl md:text-6xl text-rose-500 mb-8 text-center drop-shadow-sm">
+                Motivos por qual ele te ama
+            </h2>
+
+            <div class="bg-white/90 backdrop-blur-sm w-full min-h-[250px] p-8 rounded-3xl shadow-2xl border border-white/50 flex flex-col items-center justify-center text-center relative transition-all duration-300">
+                <div class="absolute -top-6 bg-rose-400 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg text-2xl">
+                    💌
+                </div>
+
+                <p id="message-text" class="text-gray-700 text-lg md:text-xl leading-relaxed mt-4 font-medium fade-in">
+                    Puxe um bilhetinho para descobrir.
+                </p>
+            </div>
+
+            <div class="mt-8 w-full flex flex-col items-center gap-4">
+                <button id="btn-draw" onclick="drawMessage()" class="w-full sm:w-auto bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-1 flex items-center justify-center gap-2">
+                    Puxar um bilhetinho
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <!-- Botão oculto que aparece após 5 cliques -->
+                <button id="btn-prosseguir" onclick="goToScreen('screen-final')" class="hidden w-full sm:w-auto bg-white text-rose-500 border-2 border-rose-400 hover:bg-rose-50 font-semibold py-3 px-8 rounded-full shadow-md transition-all duration-300 transform hover:-translate-y-1 fade-in">
+                    Prosseguir? 👀
+                </button>
+            </div>
+            
+            <!-- Contador disfarçado para ela ver o progresso -->
+            <p id="click-counter-text" class="text-xs text-rose-400 mt-4 opacity-70">Leia quantos quiser...</p>
+        </div>
+    </main>
+
+    <!-- ==========================================
+         FASE 4: MURAL FINAL
+         ========================================== -->
+    <main id="screen-final" class="screen p-0">
+        <div class="w-full h-full absolute inset-0 flex flex-col items-center justify-center relative min-h-screen">
+            
+            <!-- Mural de Fotos Espalhadas Cobrindo a Tela Inteira (24 Slots de Fotos) -->
+            <div class="photo-wall">
+                <!-- Zona Superior -->
+                <div class="polaroid-scattered" style="top: 2%; left: 2%; transform: rotate(-8deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+1" alt="Foto 1"></div>
+                <div class="polaroid-scattered" style="top: 15%; left: 12%; transform: rotate(12deg); z-index: 2;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+2" alt="Foto 2"></div>
+                <div class="polaroid-scattered" style="top: -5%; left: 35%; transform: rotate(4deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+3" alt="Foto 3"></div>
+                <div class="polaroid-scattered" style="top: 8%; left: 55%; transform: rotate(-15deg); z-index: 2;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+4" alt="Foto 4"></div>
+                <div class="polaroid-scattered" style="top: 5%; right: 5%; transform: rotate(10deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+5" alt="Foto 5"></div>
+                <div class="polaroid-scattered" style="top: 20%; right: 15%; transform: rotate(-6deg); z-index: 2;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+6" alt="Foto 6"></div>
+
+                <!-- Zona Central / Meio -->
+                <div class="polaroid-scattered" style="top: 35%; left: -2%; transform: rotate(14deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+7" alt="Foto 7"></div>
+                <div class="polaroid-scattered" style="top: 50%; left: 8%; transform: rotate(-5deg); z-index: 2;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+8" alt="Foto 8"></div>
+                
+                <!-- Fotos escondidas atrás da carta (dá sensação de preenchimento real) -->
+                <div class="polaroid-scattered" style="top: 30%; left: 45%; transform: rotate(-20deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+9" alt="Foto 9"></div>
+                <div class="polaroid-scattered" style="top: 60%; left: 30%; transform: rotate(15deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+10" alt="Foto 10"></div>
+                <div class="polaroid-scattered" style="top: 45%; right: 30%; transform: rotate(8deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+11" alt="Foto 11"></div>
+                
+                <div class="polaroid-scattered" style="top: 40%; right: -2%; transform: rotate(-12deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+12" alt="Foto 12"></div>
+                <div class="polaroid-scattered" style="top: 65%; right: 8%; transform: rotate(18deg); z-index: 2;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+13" alt="Foto 13"></div>
+
+                <!-- Zona Inferior -->
+                <div class="polaroid-scattered" style="bottom: 10%; left: 5%; transform: rotate(-10deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+14" alt="Foto 14"></div>
+                <div class="polaroid-scattered" style="bottom: -2%; left: 20%; transform: rotate(5deg); z-index: 2;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+15" alt="Foto 15"></div>
+                <div class="polaroid-scattered" style="bottom: 15%; left: 40%; transform: rotate(14deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+16" alt="Foto 16"></div>
+                <div class="polaroid-scattered" style="bottom: 5%; left: 55%; transform: rotate(-8deg); z-index: 2;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+17" alt="Foto 17"></div>
+                <div class="polaroid-scattered" style="bottom: 12%; right: 15%; transform: rotate(-14deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+18" alt="Foto 18"></div>
+                <div class="polaroid-scattered" style="bottom: -5%; right: 2%; transform: rotate(10deg); z-index: 2;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+19" alt="Foto 19"></div>
+                
+                <!-- Camada Extra para telas maiores -->
+                <div class="polaroid-scattered hidden md:block" style="top: 25%; left: 25%; transform: rotate(-25deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+20" alt="Foto 20"></div>
+                <div class="polaroid-scattered hidden md:block" style="bottom: 25%; right: 25%; transform: rotate(22deg);"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+21" alt="Foto 21"></div>
+                <div class="polaroid-scattered hidden lg:block" style="top: 10%; right: 35%; transform: rotate(5deg); z-index: 1;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+22" alt="Foto 22"></div>
+                <div class="polaroid-scattered hidden lg:block" style="bottom: 20%; left: 30%; transform: rotate(-15deg); z-index: 1;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+23" alt="Foto 23"></div>
+                <div class="polaroid-scattered hidden xl:block" style="top: 75%; right: 45%; transform: rotate(12deg); z-index: 1;"><img src="https://placehold.co/400x400/fed7aa/4a4a4a?text=Foto+24" alt="Foto 24"></div>
+            </div>
+
+            <!-- Cartão Central (Estilo Carta) -->
+            <div class="z-20 letter-style p-8 md:p-12 max-w-[90%] md:max-w-lg text-center transform hover:scale-105 transition-transform duration-500 mx-4 shadow-2xl relative pointer-events-auto">
+                
+                <!-- Selinho da carta -->
+                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-4xl drop-shadow-md">
+                    💌
+                </div>
+
+                <h1 class="font-handwriting text-5xl md:text-6xl text-rose-600 mb-4 mt-2 drop-shadow-sm leading-tight">
+                    Eu te amo,<br>Júlia
+                </h1>
+                
+                <div class="w-16 h-[2px] bg-pink-300 mx-auto mb-6 rounded-full"></div>
+                
+                <p class="text-gray-800 text-lg md:text-xl font-medium leading-relaxed mb-8">
+                    Que esse seja o primeiro dia dos namorados de inúmeros.
+                </p>
+                
+                <div class="text-right border-t border-gray-300 pt-6 mt-4">
+                    <p class="font-handwriting text-4xl text-gray-800 transform -rotate-3 inline-block">
+                        Ass. Nathan
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // LÓGICA DE TRANSIÇÃO DE TELAS
+        // ==========================================
+        function goToScreen(screenId) {
+            // Remove a classe 'active' de todas as telas
+            document.querySelectorAll('.screen').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Um pequeno delay para forçar o re-render e a animação acontecer fluída
+            setTimeout(() => {
+                document.getElementById(screenId).classList.add('active');
+            }, 50);
+        }
+
+        // ==========================================
+        // LÓGICA DO QUIZ (FASE 2)
+        // ==========================================
+        function handleWrongAnswer(btnElement) {
+            // Desabilita todos os botões para ela não clicar em vários
+            const buttons = document.querySelectorAll('.quiz-btn');
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.classList.add('opacity-50', 'cursor-not-allowed');
+            });
+
+            // Adiciona cor vermelha e tremor ao botão clicado
+            btnElement.classList.remove('bg-pink-50', 'text-pink-800', 'opacity-50');
+            btnElement.classList.add('bg-rose-500', 'text-white', 'animate-shake');
+
+            // Mostra o aviso fofo
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.style.display = 'block';
+
+            // Aguarda 4 segundos para ela ler a piadinha e muda de tela
+            setTimeout(() => {
+                goToScreen('screen-jar');
+            }, 4500);
+        }
+
+        // ==========================================
+        // LÓGICA DO POTE DE MOTIVOS (FASE 3)
+        // ==========================================
+        const messages = [
+            "Porque o seu sorriso ilumina qualquer lugar.",
+            "Pelo jeito adorável que você fica quando está concentrada.",
+            "Porque você é a minha pessoa favorita no mundo inteiro.",
+            "Pelas nossas conversas que me fazem perder a noção do tempo.",
+            "Porque a sua risada é a melhor melodia.",
+            "Pela forma como você me faz sentir especial todos os dias.",
+            "Porque eu amo a forma como nossos dedos se encaixam.",
+            "Pela sua força e determinação incrível.",
+            "Porque até os dias ruins são bons quando você está por perto.",
+            "Pelo cheirinho que fica na minha roupa depois do seu abraço.",
+            "Porque você entende as minhas palhaçadas.",
+            "Porque dividir a vida com você é a minha maior sorte."
+        ];
+
+        let currentMessageIndex = -1;
+        let drawClicks = 0; // Contador de cliques
+
+        function drawMessage() {
+            const messageElement = document.getElementById('message-text');
+            const drawButton = document.getElementById('btn-draw');
+            
+            drawButton.disabled = true;
+            messageElement.classList.remove('fade-in');
+            messageElement.classList.add('fade-out');
+
+            setTimeout(() => {
+                // Sorteia diferente do atual
+                let newIndex;
+                if (messages.length > 1) {
+                    do { newIndex = Math.floor(Math.random() * messages.length); } 
+                    while (newIndex === currentMessageIndex);
+                } else {
+                    newIndex = 0;
+                }
+                currentMessageIndex = newIndex;
+                
+                messageElement.innerText = messages[currentMessageIndex];
+                
+                messageElement.classList.remove('fade-out');
+                messageElement.classList.add('fade-in');
+                drawButton.disabled = false;
+
+                // Lógica de progresso (botão de prosseguir)
+                drawClicks++;
+                if(drawClicks === 5) {
+                    document.getElementById('btn-prosseguir').classList.remove('hidden');
+                    document.getElementById('click-counter-text').innerText = "Tem muitos mais motivos, mas você já pode prosseguir se quiser!";
+                }
+
+            }, 500);
+        }
+
+        // ==========================================
+        // EFEITOS VISUAIS: CORAÇÕES NO FUNDO
+        // ==========================================
+        function createFloatingHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartIcons = ['♥', '♡', '💕', '💖', '✨'];
+            
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('floating-heart');
+                heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                
+                heart.style.left = `${Math.random() * 100}vw`;
+                
+                const size = Math.random() * 1.5 + 0.8;
+                heart.style.fontSize = `${size}rem`;
+                
+                const duration = Math.random() * 10 + 10;
+                heart.style.animationDuration = `${duration}s`;
+                
+                const delay = Math.random() * 10;
+                heart.style.animationDelay = `${delay}s`;
+                
+                container.appendChild(heart);
+            }
+        }
+
+        // Inicia a criação de corações ao carregar
+        window.onload = createFloatingHearts;
+    </script>
+</body>
+</html>
